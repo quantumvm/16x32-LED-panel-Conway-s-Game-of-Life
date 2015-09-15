@@ -72,30 +72,48 @@ void initialize_random(int x, int y, char *** test){
 int check_surrounding_neighbors(int x, int y, int i, int x_max, int y_max, char *** test){
     puts("CHECK SURROUNDING");
     int neighbors = 0;
+    
+    puts("CALC");
+    int neg_y = (((y-1) % y_max)<0) ? (y_max+((y-1)%y_max)):(y-1);
+    int neg_x = (((x-1) % x_max)<0) ? (x_max+((x-1)%x_max)):(x-1);
+   
+    printf("x: %d\n", x);
+    printf("y: %d\n", y);
+    printf("neg_x=%d\n",neg_x);
+    printf("neg_y=%d\n",neg_y);
 
-    if(test[i][(x-1) % x_max][(y-1) % y_max]){
+    puts("FIRST CHECK!");
+    if(test[i][neg_x][neg_y] ){
         neighbors++;
+        puts("low left");
     }
-    if(test[i][x % x_max][(y-1) % y_max]){
+    if(test[i][x][neg_y]){
         neighbors++;
+        puts("down");
     }
-    if(test[i][(x+1) % x_max][(y-1) % y_max]){
+    if(test[i][(x+1) % x_max][neg_y]){
         neighbors++;
+        puts("down right");
     }
-    if(test[i][(x-1)%x_max][(y)%y_max]){
+    if(test[i][neg_x][y]){
         neighbors++;
+        puts("left");
     }
-    if(test[i][(x+1)%x_max][y%y_max]){
+    if(test[i][(x+1)%x_max][y]){
         neighbors++;
+        puts("right");
     }
-    if(test[i][(x-1)%x_max][(y+1)%y_max]){
+    if(test[i][neg_x][(y+1)%y_max]){
         neighbors++;
+        puts("up left");
     }
-    if(test[i][x%x_max][(y+1)%y_max]){
+    if(test[i][x][(y+1)%y_max]){
         neighbors++;
+        puts("up");
     }
     if(test[i][(x+1)%x_max][(y+1)%y_max]){
         neighbors++;
+        puts("up right");
     }
     
     return neighbors;
@@ -109,7 +127,7 @@ void mutate(int x, int y, char *** test){
     //iterate through frame
     for(int i=0; i<(VAL-1); i++){
         for(int x_i=0; x_i<x; x_i++){
-            for(int y_i=0; y_i<y; i++){
+            for(int y_i=0; y_i<y; y_i++){
                 neighbors = check_surrounding_neighbors(x_i, y_i, i, x, y, test);
                 is_alive = ('1'==test[i][x_i][y_i]) ? 1:0;
                 
@@ -139,11 +157,13 @@ void mutate(int x, int y, char *** test){
 int main(void) {
     char *** test = alloc_memory(16,32);
     zero_memory(16,32,test);
-    
-    initialize_random(16,32,test); 
-    mutate(16,32,test);
-
     print_memory(16,32,test);
+
+    initialize_random(16,32,test); 
+    print_memory(16,32,test);
+    
+    mutate(16,32,test);
+//    print_memory(16,32,test);
 	
 }
 
