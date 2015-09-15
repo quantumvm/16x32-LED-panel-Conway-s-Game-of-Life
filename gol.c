@@ -79,53 +79,41 @@ void initialize_random(int x, int y, char *** test){
 }
 
 int check_surrounding_neighbors(int x, int y, int i, int x_max, int y_max, char *** test){
-    puts("CHECK SURROUNDING");
     int neighbors = 0;
     
-    puts("CALC");
     int neg_y = (((y-1) % y_max)<0) ? (y_max+((y-1)%y_max)):(y-1);
     int neg_x = (((x-1) % x_max)<0) ? (x_max+((x-1)%x_max)):(x-1);
 
     if(test[i][neg_x][neg_y] == ALIVE){
         neighbors++;
-        puts("low left");
     }
     if(test[i][x][neg_y] == ALIVE){
         neighbors++;
-        puts("down");
     }
     if(test[i][(x+1) % x_max][neg_y] == ALIVE){
         neighbors++;
-        puts("down right");
     }
     if(test[i][neg_x][y] == ALIVE){
         neighbors++;
-        puts("left");
     }
     if(test[i][(x+1)%x_max][y] == ALIVE){
         neighbors++;
-        puts("right");
     }
     if(test[i][neg_x][(y+1)%y_max] == ALIVE){
         neighbors++;
-        puts("up left");
     }
     if(test[i][x][(y+1)%y_max] == ALIVE){
         neighbors++;
-        puts("up");
     }
     if(test[i][(x+1)%x_max][(y+1)%y_max] == ALIVE){
         neighbors++;
-        puts("up right");
     }
     
-    printf("NEIGHBORS: %d\n", neighbors);
 
     return neighbors;
 }
 
 void mutate(int x, int y, char *** test){
-    puts("MUTATE");
     int neighbors;
     int is_alive;
 
@@ -161,11 +149,13 @@ void mutate(int x, int y, char *** test){
 
 int main(void) {
     char *** test = alloc_memory(16,32);
-    zero_memory(16,32,test);
-    initialize_random(16,32,test); 
-    mutate(16,32,test);
-
-    print_memory(16,32,test);
+    
+    while(1){
+        zero_memory(16,32,test);
+        initialize_random(16,32,test); 
+        mutate(16,32,test);
+        print_memory(16,32,test);
+    }
 	
 }
 
