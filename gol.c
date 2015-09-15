@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
-#define VAL 2
+#define VAL 15
 #define MIN_RANDOM 30
-#define MAX_RANDOM 50
+#define MAX_RANDOM 100
+#define ALIVE '1'
+#define DEAD ' '
+
 
 //allocate memory
 char *** alloc_memory(int x, int y){
@@ -31,7 +35,7 @@ void zero_memory(int x, int y, char *** test){
     for(int i=0; i<VAL; i++){
         for(int p=0; p<x; p++){
             for(int q=0; q<y; q++){
-                test[i][p][q]= (char) '0';
+                test[i][p][q]= (char) DEAD;
             }
         }
     }
@@ -39,7 +43,10 @@ void zero_memory(int x, int y, char *** test){
 
 //print memory
 void print_memory(int x, int y, char *** test){
+    
     for(int i=0; i<VAL; i++){
+        printf("\033[H\033[J");
+        
         for(int p=0; p<x; p++){
             for(int q=0; q<y; q++){
                 printf("%c",test[i][p][q]);
@@ -47,6 +54,8 @@ void print_memory(int x, int y, char *** test){
             
             printf("\n");
         }
+
+        sleep(1);
         printf("|------------------|\n");
     }
 }
@@ -65,7 +74,7 @@ void initialize_random(int x, int y, char *** test){
     random_iterations = (rand() % (MAX_RANDOM-MIN_RANDOM)) + MIN_RANDOM;
     
     for(int i=0; i<random_iterations; i++){
-        set_value(0, rand() % x, rand() % y, '1', test);
+        set_value(0, rand() % x, rand() % y, ALIVE, test);
     }
 }
 
@@ -76,46 +85,42 @@ int check_surrounding_neighbors(int x, int y, int i, int x_max, int y_max, char 
     puts("CALC");
     int neg_y = (((y-1) % y_max)<0) ? (y_max+((y-1)%y_max)):(y-1);
     int neg_x = (((x-1) % x_max)<0) ? (x_max+((x-1)%x_max)):(x-1);
-   
-    printf("x: %d\n", x);
-    printf("y: %d\n", y);
-    printf("neg_x=%d\n",neg_x);
-    printf("neg_y=%d\n",neg_y);
 
-    puts("FIRST CHECK!");
-    if(test[i][neg_x][neg_y] ){
+    if(test[i][neg_x][neg_y] == ALIVE){
         neighbors++;
         puts("low left");
     }
-    if(test[i][x][neg_y]){
+    if(test[i][x][neg_y] == ALIVE){
         neighbors++;
         puts("down");
     }
-    if(test[i][(x+1) % x_max][neg_y]){
+    if(test[i][(x+1) % x_max][neg_y] == ALIVE){
         neighbors++;
         puts("down right");
     }
-    if(test[i][neg_x][y]){
+    if(test[i][neg_x][y] == ALIVE){
         neighbors++;
         puts("left");
     }
-    if(test[i][(x+1)%x_max][y]){
+    if(test[i][(x+1)%x_max][y] == ALIVE){
         neighbors++;
         puts("right");
     }
-    if(test[i][neg_x][(y+1)%y_max]){
+    if(test[i][neg_x][(y+1)%y_max] == ALIVE){
         neighbors++;
         puts("up left");
     }
-    if(test[i][x][(y+1)%y_max]){
+    if(test[i][x][(y+1)%y_max] == ALIVE){
         neighbors++;
         puts("up");
     }
-    if(test[i][(x+1)%x_max][(y+1)%y_max]){
+    if(test[i][(x+1)%x_max][(y+1)%y_max] == ALIVE){
         neighbors++;
         puts("up right");
     }
     
+    printf("NEIGHBORS: %d\n", neighbors);
+
     return neighbors;
 }
 
@@ -133,17 +138,17 @@ void mutate(int x, int y, char *** test){
                 
                 if(is_alive){
                     if(neighbors<2){
-                        set_value(i+1, x_i, y_i, '0', test);
+                        set_value(i+1, x_i, y_i, DEAD, test);
                     }
                     else if(neighbors==2 || neighbors==3){
-                        set_value(i+1, x_i, y_i, '1', test);
+                        set_value(i+1, x_i, y_i, ALIVE, test);
                     }
                     else if(neighbors > 3){
-                        set_value(i+1, x_i, y_i, '0', test);
+                        set_value(i+1, x_i, y_i, DEAD, test);
                     }
                 }else{
                     if(neighbors == 3){
-                        set_value(i+1, x_i, y_i, '1', test);
+                        set_value(i+1, x_i, y_i, ALIVE, test);
                     }
                 }
             }
@@ -157,13 +162,10 @@ void mutate(int x, int y, char *** test){
 int main(void) {
     char *** test = alloc_memory(16,32);
     zero_memory(16,32,test);
-    print_memory(16,32,test);
-
     initialize_random(16,32,test); 
-    print_memory(16,32,test);
-    
     mutate(16,32,test);
-//    print_memory(16,32,test);
+
+    print_memory(16,32,test);
 	
 }
 
